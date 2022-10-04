@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/drawable-v24/ic_arrow_back.xml" value="0.2" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/drawable-v24/ic_arrow_drop_down.xml" value="0.213" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/drawable-v24/ic_delete.xml" value="0.213" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/drawable-v24/ic_delete_toolbar.xml" value="0.1995" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/drawable-v24/ic_playlist_add.xml" value="0.213" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/drawable-v24/ic_proptit.xml" value="0.213" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/drawable-v24/ic_timer_off.xml" value="0.213" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/drawable/ic_filter_list.xml" value="0.213" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/drawable/ic_search.xml" value="0.1775" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/layout/activity_main.xml" value="0.21501390176088972" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/layout/bottomsheet_date_and_time.xml" value="0.29635416666666664" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/layout/bottomsheet_delete_alert.xml" value="0.29635416666666664" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/layout/fragment_about_me.xml" value="0.29635416666666664" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/layout/fragment_add_edit.xml" value="0.19166666666666668" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/layout/fragment_home.xml" value="0.18432971014492755" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/layout/ic_add.xml" value="0.2682291666666667" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/layout/ic_proptit.xml" value="0.19166666666666668" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/layout/item_todo.xml" value="0.2" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/layout/layout_toolbar.xml" value="0.18432971014492755" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/layout/text_input.xml" value="0.29635416666666664" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/menu/menu_delete.xml" value="0.19166666666666668" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/menu/menu_main.xml" value="0.16875" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/menu/menu_save.xml" value="0.1921875" />
+        <entry key="..\:/Users/thuan/AndroidStudioProjects/TodoAppCleanArchWithKoin/app/src/main/res/xml/todo_preference.xml" value="0.29635416666666664" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

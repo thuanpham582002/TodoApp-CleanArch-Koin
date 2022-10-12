@@ -10,10 +10,12 @@ import androidx.core.os.LocaleListCompat
 import androidx.preference.PreferenceManager
 import com.example.core.di.databaseModule
 import com.example.core.di.repositoryModule
+import com.example.todoappcleanarchwithkoin.di.notificationModule
 import com.example.todoappcleanarchwithkoin.di.useCaseModule
 import com.example.todoappcleanarchwithkoin.di.viewModelModule
 import com.example.todoappcleanarchwithkoin.ui.notification.constants.TODO_CHANNEL_ID
 import com.example.todoappcleanarchwithkoin.ui.setting.constants.APP_LANGUAGE
+import com.example.todoappcleanarchwithkoin.ui.setting.constants.APP_THEME_MODE
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -25,6 +27,12 @@ class App : Application() {
         val language = sp.getString(APP_LANGUAGE, "en")
         val locales = LocaleListCompat.forLanguageTags(language)
         AppCompatDelegate.setApplicationLocales(locales)
+        val isNightMode = sp.getString(APP_THEME_MODE, "light")
+        if (isNightMode == "dark" && (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_YES)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        } else if (isNightMode == "light" && (AppCompatDelegate.getDefaultNightMode() != AppCompatDelegate.MODE_NIGHT_NO)) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
 
         startKoin {
             androidContext(this@App)
@@ -33,7 +41,8 @@ class App : Application() {
                     databaseModule,
                     repositoryModule,
                     useCaseModule,
-                    viewModelModule
+                    viewModelModule,
+                    notificationModule
                 )
             )
         }

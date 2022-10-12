@@ -17,6 +17,8 @@ class TodoBootCompleteReceiver : BroadcastReceiver() {
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onReceive(context: Context, intent: Intent) {
+        val todoScheduler: TodoScheduler = get(TodoScheduler::class.java)
+
         if (intent.action == "android.intent.action.BOOT_COMPLETED") {
             Log.i("notification", "onReceive:  BOOT_COMPLETED")
             CoroutineScope(Dispatchers.IO).launch {
@@ -24,7 +26,7 @@ class TodoBootCompleteReceiver : BroadcastReceiver() {
                 todoRepository.getAllTodo().onEach {
                     Log.i("notification", "onReceive:  boot2")
                     it.forEach { todo ->
-                        todoScheduleNotification(todo)
+                        todoScheduler.todoScheduleNotification(todo)
                     }
                 }
             }

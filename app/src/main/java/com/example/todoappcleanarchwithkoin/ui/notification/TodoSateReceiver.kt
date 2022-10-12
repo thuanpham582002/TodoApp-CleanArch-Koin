@@ -15,6 +15,8 @@ import org.koin.java.KoinJavaComponent.get
 
 class TodoSateReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+        val todoScheduler: TodoScheduler = get(TodoScheduler::class.java)
+
         val action = intent.action
         val id = intent.getLongExtra(TODO_ID, -1)
         val todoRepository: TodoRepository = get(TodoRepository::class.java)
@@ -31,6 +33,6 @@ class TodoSateReceiver : BroadcastReceiver() {
                 todoRepository.deleteTodo(toDo)
             }
         }
-        todoDeleteNotification(context, id)
+        todoScheduler.todoDeleteNotification(id)
     }
 }

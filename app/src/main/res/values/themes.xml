@@ -6,11 +6,9 @@
         <item name="actionModeStyle">@style/AppBaseThemeMaterial.ActionMode</item>
         <!-- Change color Close Button in action mode       -->
         <item name="actionModeCloseButtonStyle">@style/MyCloseButton</item>
-
     </style>
 
     <style name="Theme.TodoAppCleanArchWithKoin" parent="Base.Theme.TodoAppCleanArchWithKoin" />
-
 
     <style name="AppBaseThemeMaterial.ActionMode" parent="@style/Widget.AppCompat.ActionMode">
         <item name="background">?attr/colorPrimary</item>

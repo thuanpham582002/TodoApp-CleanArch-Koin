@@ -27,8 +27,8 @@ class TodoUseCaseImpl(private val todoRepository: TodoRepository) : TodoUseCase 
         return todoRepository.getTodoById(id)
     }
 
-    override suspend fun insertTodoEntity(todoEntity: TodoEntity) {
-        todoRepository.insertTodo(todoEntity)
+    override suspend fun insertTodoEntity(todoEntity: TodoEntity): Long {
+        return todoRepository.insertTodo(todoEntity)
     }
 
     override suspend fun insertGroupTodoEntity(groupTodoEntity: GroupTodoEntity) {

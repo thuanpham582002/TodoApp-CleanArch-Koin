@@ -9,7 +9,7 @@ interface TodoUseCase {
     fun getAllTodoEntity(order: TodoOrder.Order): Flow<List<TodoEntity>>
     fun getAllGroupTodoEntity(): Flow<List<GroupTodoEntity>>
     suspend fun getTodoById(id: Long): TodoEntity
-    suspend fun insertTodoEntity(todoEntity: TodoEntity)
+    suspend fun insertTodoEntity(todoEntity: TodoEntity): Long
     suspend fun insertGroupTodoEntity(groupTodoEntity: GroupTodoEntity)
     suspend fun deleteTodoEntity(todoEntity: TodoEntity)
     suspend fun deleteGroupTodoEntity(groupTodoEntity: GroupTodoEntity)

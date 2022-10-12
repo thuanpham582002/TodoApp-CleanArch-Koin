@@ -28,8 +28,8 @@ class TodoRepositoryImpl(private val todoDao: TodoDao) : TodoRepository {
         todoDao.deleteTodoById(todoEntity)
     }
 
-    override suspend fun insertTodo(todoEntity: TodoEntity) {
-        todoDao.insertTodo(todoEntity)
+    override suspend fun insertTodo(todoEntity: TodoEntity): Long {
+        return todoDao.insertTodo(todoEntity)
     }
 
     override suspend fun insertGroup(groupTodoEntity: GroupTodoEntity) {

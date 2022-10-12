@@ -1,6 +1,5 @@
 package com.example.todoappcleanarchwithkoin.ui.todo.addedittodo
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,12 +7,9 @@ import com.example.core.data.source.local.model.group.GroupTodoEntity
 import com.example.core.data.source.local.model.todo.TodoEntity
 import com.example.core.domain.use_case.TodoUseCase
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import org.koin.java.KoinJavaComponent.get
 import java.util.*
-import kotlin.Exception
 
 class AddEditViewModel(
     private val todoUseCase: TodoUseCase,
@@ -112,7 +108,7 @@ class AddEditViewModel(
         if (todoId == -1L) {
             viewModelScope.launch {
                 try {
-                    todoUseCase.insertTodoEntity(
+                    todoId = todoUseCase.insertTodoEntity(
                         TodoEntity(
                             id = 0,
                             title = todoTitle,
@@ -124,6 +120,7 @@ class AddEditViewModel(
                         )
                     )
                     _eventFlow.emit(UiEvent.SaveToDoSuccess)
+                    com.example.todoappcleanarchwithkoin.ui.notification.todoScheduleNotification(getCurrentTodo())
                 } catch (e: Exception) {
                     _eventFlow.emit(UiEvent.SaveToDoFailed)
                 }

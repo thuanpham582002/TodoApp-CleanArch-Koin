@@ -5,6 +5,8 @@ import com.example.core.data.source.local.model.group.GroupTodoEntity
 import com.example.core.data.source.local.model.relation.GroupWithTodos
 import com.example.core.data.source.local.model.todo.TodoEntity
 import com.example.core.domain.TodoRepository
+import com.example.core.domain.model.group.InvalidGroupException
+import com.example.core.domain.model.todo.InvalidTodoException
 import kotlinx.coroutines.flow.Flow
 
 class TodoRepositoryImpl(private val todoDao: TodoDao) : TodoRepository {
@@ -29,16 +31,27 @@ class TodoRepositoryImpl(private val todoDao: TodoDao) : TodoRepository {
     }
 
     override suspend fun insertTodo(todoEntity: TodoEntity): Long {
+        if (todoEntity.title.isEmpty()) {
+            throw InvalidTodoException("Title cannot be empty")
+        }
         return todoDao.insertTodo(todoEntity)
     }
 
+    override suspend fun updateTodo(todoEntity: TodoEntity) {
+        if (todoEntity.title.isEmpty()) {
+            throw InvalidTodoException("Title cannot be empty")
+        }
+        todoDao.updateTodo(todoEntity)
+    }
+
     override suspend fun insertGroup(groupTodoEntity: GroupTodoEntity) {
+        if (groupTodoEntity.name.isEmpty()) {
+            throw InvalidGroupException("Group name cannot be empty")
+        }
         todoDao.insertGroup(groupTodoEntity)
     }
 
-    override suspend fun updateTodo(todoEntity: TodoEntity) {
-        todoDao.updateTodo(todoEntity)
-    }
+
 
     override suspend fun deleteAllTodo() {
         todoDao.deleteAllTodo()

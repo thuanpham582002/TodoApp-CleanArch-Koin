@@ -53,9 +53,11 @@
     </tr>
     <tr>
         <td><strong>Setting</strong></td>
+        <td><strong>Notification</strong></td>
     </tr>
     <tr>
         <td><img src="screenshots/setting_light.png" width="200"></td>
+        <td><img src="screenshots/notification.png" width="200"></td>
     <tr>
         <td><strong>Home Dark</strong></td>
         <td><strong>Home Dark selection group</strong></td>
@@ -82,11 +84,9 @@
     </tr>
     <tr>
         <td><strong>Setting Dark</strong></td>
-        <td><strong>Notification</strong></td>
     </tr>
     <tr>
         <td><img src="screenshots/setting_dark.png" width="200"></td>
-        <td><img src="screenshots/notification.png" width="100%"></td>
     </tr>
 </table>
 ### Vietnamese
@@ -121,7 +121,7 @@
     </tr>
     <tr>
         <td><img src="screenshots/vie_setting_light.png" width="200"></td>
-        <td><img src="screenshots/vie_notification.png" width="100%"></td>
+        <td><img src="screenshots/vie_notification.png" width="200"></td>
 </table>
 
 

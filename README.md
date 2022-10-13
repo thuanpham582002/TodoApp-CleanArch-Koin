@@ -2,6 +2,7 @@
 ## A simple to do list app built with kotlin
 ### Technologies used:
 - Kotlin
+- Koin
 - Room
 - MVVM + Clean Architecture
 - Flow
@@ -81,9 +82,11 @@
     </tr>
     <tr>
         <td><strong>Setting Dark</strong></td>
+        <td><strong>Notification</strong></td>
     </tr>
     <tr>
         <td><img src="screenshots/setting_dark.png" width="200"></td>
+        <td><img src="screenshots/notification.png" width="200"></td>
     </tr>
 </table>
 ### Vietnamese
@@ -114,9 +117,11 @@
     </tr>
     <tr>
         <td><strong>Setting</strong></td>
+        <td><strong>Notification</strong></td>
     </tr>
     <tr>
         <td><img src="screenshots/vie_setting_light.png" width="200"></td>
+        <td><img src="screenshots/vie_notification.png" width="200"></td>
 </table>
 
 

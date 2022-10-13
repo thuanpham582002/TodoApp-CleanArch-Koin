@@ -9,7 +9,6 @@ import com.example.core.data.source.local.model.todo.TodoEntity
 import com.example.todoappcleanarchwithkoin.ui.notification.constants.TODO_DESCRIPTION
 import com.example.todoappcleanarchwithkoin.ui.notification.constants.TODO_ID
 import com.example.todoappcleanarchwithkoin.ui.notification.constants.TODO_TITLE
-import org.koin.java.KoinJavaComponent.get
 
 class TodoScheduler(val context: Context) {
     fun todoScheduleNotification(

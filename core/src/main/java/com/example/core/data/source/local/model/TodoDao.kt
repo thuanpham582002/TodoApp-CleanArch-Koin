@@ -12,9 +12,6 @@ interface TodoDao {
     @Query("SELECT * FROM todo_table")
     fun getAllTodo(): Flow<List<TodoEntity>>
 
-    @Query("SELECT * FROM todo_table")
-    suspend fun getAllTodoSync(): List<TodoEntity>
-
     @Query("SELECT * FROM group_todo_table WHERE group_name = :groupName")
     fun getAllTodoWithGroup(groupName: String): Flow<GroupWithTodos>
 

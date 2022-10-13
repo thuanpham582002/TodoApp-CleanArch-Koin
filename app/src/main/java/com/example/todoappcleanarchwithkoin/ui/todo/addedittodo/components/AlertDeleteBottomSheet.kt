@@ -11,7 +11,7 @@ import com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.constants.ACTION
 
 class AlertDeleteBottomSheet : BottomSheetDialogFragment() {
     private lateinit var binding: BottomsheetDeleteAlertBinding
-    lateinit var actionDeleteToDo: ActionDeleteToDo
+    private lateinit var actionDeleteToDo: ActionDeleteToDo
 
     companion object {
         fun newInstance(action_delete: ActionDeleteToDo) =

@@ -1,9 +1,12 @@
+@file:Suppress("unused")
+
 package com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.components
 
 import android.content.Context
 import androidx.appcompat.app.AlertDialog
 import com.example.todoappcleanarchwithkoin.R
 
+@Suppress("unused", "unused")
 object DialogQuitWithOutSaving {
     fun show(context: Context, actionQuit: () -> Unit) {
         AlertDialog.Builder(context)

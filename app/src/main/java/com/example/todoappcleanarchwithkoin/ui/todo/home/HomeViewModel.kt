@@ -20,7 +20,7 @@ class HomeViewModel(private val todoUseCase: TodoUseCase) : ViewModel() {
     val listGroup = todoUseCase.getAllGroupTodoEntity()
     private val _state = MutableStateFlow(HomeState())
     val state: StateFlow<HomeState> = _state
-    val todoScheduler: TodoScheduler = get(TodoScheduler::class.java)
+    private val todoScheduler: TodoScheduler = get(TodoScheduler::class.java)
 
     private var getTodosJob: Job? = null
 

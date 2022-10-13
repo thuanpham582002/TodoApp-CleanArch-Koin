@@ -2,7 +2,6 @@ package com.example.todoappcleanarchwithkoin.ui.todo.home.components.util
 
 import androidx.recyclerview.widget.DiffUtil
 import com.example.core.data.source.local.model.todo.TodoEntity
-import com.example.core.domain.model.todo.Todo
 
 class TodoRecycleDiffUtil(
     private val oldList: List<TodoEntity>,

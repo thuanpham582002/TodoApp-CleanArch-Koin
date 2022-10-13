@@ -59,7 +59,7 @@ class HomeFragment : Fragment(), ActionMode.Callback, SearchView.OnQueryTextList
     private fun subscribeToObservers() {
         lifecycleScope.launchWhenStarted {
             homeViewModel.state.collectLatest {
-                todoAdapter.setData(it.listTodo)
+                todoAdapter.setData(it.listTodo.filter { todo -> todo.title.contains(it.searchQuery) })
                 binding.rlOrder.visibility =
                     if (!it.isOrderSectionVisible) View.GONE else View.VISIBLE
                 if (it.currentGroupName != null) binding.tvGroup.text = it.currentGroupName
@@ -218,12 +218,9 @@ class HomeFragment : Fragment(), ActionMode.Callback, SearchView.OnQueryTextList
         return false
     }
 
-    override fun onQueryTextChange(newText: String?): Boolean {
+    override fun onQueryTextChange(newText: String): Boolean {
         Log.i("onQueryTextChange", "onQueryTextChange: $newText")
-        val listTodo = homeViewModel.state.value.listTodo.filter { todo ->
-            todo.title.contains(newText.toString(), true)
-        }
-        todoAdapter.setData(listTodo)
+        homeViewModel.onEvent(HomeEvent.SearchQueryChange(newText))
         return true
     }
 

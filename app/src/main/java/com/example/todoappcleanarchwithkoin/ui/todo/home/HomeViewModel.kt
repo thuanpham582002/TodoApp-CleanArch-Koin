@@ -79,6 +79,9 @@ class HomeViewModel(private val todoUseCase: TodoUseCase) : ViewModel() {
             is HomeEvent.CurrentGroupName -> {
                 _state.value = _state.value.copy(currentGroupName = event.groupName)
             }
+            is HomeEvent.SearchQueryChange -> {
+                _state.value = _state.value.copy(searchQuery = event.newText)
+            }
         }
 
     }

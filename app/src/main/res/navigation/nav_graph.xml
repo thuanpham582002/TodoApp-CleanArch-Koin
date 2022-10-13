@@ -11,10 +11,18 @@
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_homeFragment_to_addEditFragment"
-            app:destination="@id/addEditFragment" />
+            app:destination="@id/addEditFragment"
+            app:enterAnim="@anim/anim_from_bottom"
+            app:exitAnim="@anim/anim_leave_from_top"
+            app:popEnterAnim="@anim/anim_from_top"
+            app:popExitAnim="@anim/anim_leave_from_bottom" />
         <action
             android:id="@+id/action_homeFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
+            app:destination="@id/settingsFragment"
+            app:enterAnim="@anim/anim_from_bottom"
+            app:exitAnim="@anim/anim_leave_from_top"
+            app:popEnterAnim="@anim/anim_from_top"
+            app:popExitAnim="@anim/anim_leave_from_bottom" />
     </fragment>
     <fragment
         android:id="@+id/addEditFragment"
@@ -27,7 +35,11 @@
         android:label="SettingsFragment">
         <action
             android:id="@+id/action_settingsFragment_to_aboutMeFragment"
-            app:destination="@id/aboutMeFragment" />
+            app:destination="@id/aboutMeFragment"
+            app:enterAnim="@anim/anim_from_bottom"
+            app:exitAnim="@anim/anim_leave_from_top"
+            app:popEnterAnim="@anim/anim_from_top"
+            app:popExitAnim="@anim/anim_leave_from_bottom" />
     </fragment>
     <fragment
         android:id="@+id/aboutMeFragment"

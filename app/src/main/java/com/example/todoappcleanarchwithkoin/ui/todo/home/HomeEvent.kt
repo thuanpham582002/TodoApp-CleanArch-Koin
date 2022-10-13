@@ -8,5 +8,6 @@ sealed interface HomeEvent {
     data class UpdateToDo(val todoEntity: TodoEntity) : HomeEvent
     data class Order(val todoOrder: TodoOrder) : HomeEvent
     data class CurrentGroupName(val groupName: String) : HomeEvent
+    data class SearchQueryChange(val newText: String) : HomeEvent
     object ToggleOrderSection : HomeEvent
 }

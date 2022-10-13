@@ -1,16 +1,24 @@
 package com.example.todoappcleanarchwithkoin.ui.todo.addedittodo
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.data.source.local.model.group.GroupTodoEntity
 import com.example.core.data.source.local.model.todo.TodoEntity
+import com.example.core.domain.model.group.InvalidGroupException
+import com.example.core.domain.model.todo.InvalidTodoException
 import com.example.core.domain.use_case.TodoUseCase
+import com.example.todoappcleanarchwithkoin.R
 import com.example.todoappcleanarchwithkoin.ui.notification.TodoScheduler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.get
+import com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.constants.BACK_TO_PREVIOUS_SCREEN
+import com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.constants.TIME_NOT_SET
+import com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.constants.TIME_SET
 import java.util.*
 
 class AddEditViewModel(
@@ -18,10 +26,10 @@ class AddEditViewModel(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val coreTodoEntity = savedStateHandle.get<TodoEntity>("todoEntity")
-    val todoScheduler: TodoScheduler = get(TodoScheduler::class.java)
+    private val todoScheduler: TodoScheduler = get(TodoScheduler::class.java)
 
     var todoIsCompleted: Boolean = false
-    var todoId: Long = -1
+    var todoId: Long = 0
     var todoGroupName: String = "Default"
     var todoDescription: String = ""
     var todoDateAndTime: Date? = null
@@ -31,7 +39,7 @@ class AddEditViewModel(
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-        if (coreTodoEntity!!.id != -1L) {
+        if (coreTodoEntity!!.title.isNotEmpty()) {
             todoId = coreTodoEntity.id
             todoIsCompleted = coreTodoEntity.isCompleted
             todoGroupName = coreTodoEntity.groupName
@@ -64,14 +72,13 @@ class AddEditViewModel(
             }
 
             is AddEditEvent.EnteredDateAndTime -> {
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     if (event.dateAndTime != null) {
-                        _eventFlow.emit(UiEvent.TimeIsSet)
+                        _eventFlow.emit(UiEvent.ChangeUi(TIME_SET, R.string.time_set))
                     } else {
-                        _eventFlow.emit(UiEvent.TimeNotSet)
+                        _eventFlow.emit(UiEvent.ChangeUi(TIME_NOT_SET, R.string.time_not_set))
                     }
                 }
-
                 todoDateAndTime = event.dateAndTime
             }
 
@@ -84,12 +91,14 @@ class AddEditViewModel(
             }
 
             is AddEditEvent.SaveGroup -> {
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     try {
                         todoUseCase.insertGroupTodoEntity(GroupTodoEntity(name = event.groupName))
-                        _eventFlow.emit(UiEvent.SaveGroupSuccess)
+                        _eventFlow.emit(UiEvent.Message(R.string.group_saved))
+                    } catch (e: InvalidGroupException) {
+                        _eventFlow.emit(UiEvent.Message(R.string.invalid_group))
                     } catch (e: Exception) {
-                        _eventFlow.emit(UiEvent.SaveGroupFailed)
+                        _eventFlow.emit(UiEvent.Message(R.string.group_not_saved))
                     }
                 }
             }
@@ -99,66 +108,44 @@ class AddEditViewModel(
             }
 
             AddEditEvent.DeleteToDo -> {
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     todoUseCase.deleteTodoEntity(todoUseCase.getTodoById(todoId))
-                    _eventFlow.emit(UiEvent.DeleteToDoSuccess)
+                    _eventFlow.emit(
+                        UiEvent.ChangeUi(
+                            BACK_TO_PREVIOUS_SCREEN, R.string.todo_deleted
+                        )
+                    )
+                    todoScheduler.todoCancelAlarmManager(todoId)
                 }
             }
         }
     }
 
     private fun saveToDo() {
-        if (todoId == -1L) {
-            viewModelScope.launch {
-                try {
-                    todoId = todoUseCase.insertTodoEntity(
-                        TodoEntity(
-                            id = 0,
-                            title = todoTitle,
-                            description = todoDescription,
-                            dateAndTime = todoDateAndTime,
-                            isCompleted = todoIsCompleted,
-                            isExpired = false,
-                            groupName = todoGroupName
-                        )
+        viewModelScope.launch {
+            try {
+                if (coreTodoEntity!!.title.isEmpty()) {
+                    todoId = todoUseCase.insertTodoEntity(getCurrentTodo())
+                    _eventFlow.emit(UiEvent.ChangeUi(BACK_TO_PREVIOUS_SCREEN, R.string.todo_saved))
+                } else {
+                    todoUseCase.updateTodoEntity(getCurrentTodo())
+                    _eventFlow.emit(
+                        UiEvent.ChangeUi(BACK_TO_PREVIOUS_SCREEN, R.string.todo_updated)
                     )
-                    _eventFlow.emit(UiEvent.SaveToDoSuccess)
-                    todoScheduler.todoScheduleNotification(getCurrentTodo())
-                } catch (e: Exception) {
-                    _eventFlow.emit(UiEvent.SaveToDoFailed)
                 }
-            }
-        } else {
-            viewModelScope.launch {
-                try {
-                    todoUseCase.updateTodoEntity(
-                        TodoEntity(
-                            id = todoId,
-                            title = todoTitle,
-                            description = todoDescription,
-                            dateAndTime = todoDateAndTime,
-                            isCompleted = todoIsCompleted,
-                            isExpired = false,
-                            groupName = todoGroupName
-                        )
-                    )
-                    _eventFlow.emit(UiEvent.UpdateToDoSuccess)
-                } catch (e: Exception) {
-                    _eventFlow.emit(UiEvent.UpdateToDoFailed)
-                }
+                Log.i("AddEditViewmodel", "saveToDo: ${getCurrentTodo()}")
+                todoScheduler.todoScheduleNotification(getCurrentTodo())
+            } catch (e: InvalidTodoException) {
+                _eventFlow.emit(UiEvent.Message(R.string.invalid_todo))
+            } catch (e: Exception) {
+                Log.i("AddEditViewmodel", "saveToDo: ${e.message}")
+                _eventFlow.emit(UiEvent.Message(R.string.todo_not_saved))
             }
         }
     }
 
     sealed interface UiEvent {
-        object SaveGroupSuccess : UiEvent
-        object SaveGroupFailed : UiEvent
-        object DeleteToDoSuccess : UiEvent
-        object SaveToDoSuccess : UiEvent
-        object SaveToDoFailed : UiEvent
-        object UpdateToDoSuccess : UiEvent
-        object UpdateToDoFailed : UiEvent
-        object TimeNotSet : UiEvent
-        object TimeIsSet : UiEvent
+        data class Message(val idMessage: Int) : UiEvent
+        data class ChangeUi(val id: Int, val idMessage: Int) : UiEvent
     }
 }

@@ -61,4 +61,7 @@
     <string name="todo_updated">To do updated</string>
     <string name="todo_not_saved">Fail to save to do</string>
     <string name="my_to_do_list">My to do list</string>
+    <string name="invalid_todo">Title cannot be empty</string>
+    <string name="invalid_group">Group Name can not be empty!</string>
+    <string name="time_set">Time set</string>
 </resources>

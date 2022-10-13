@@ -4,14 +4,14 @@ import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import java.util.*
 
 @Parcelize
 @Entity(tableName = "todo_table")
 data class TodoEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = -1L,
+    val id: Long = 0,
     @ColumnInfo(name = "todo_title")
     val title: String = "",
     @ColumnInfo(name = "todo_description")
@@ -23,5 +23,5 @@ data class TodoEntity(
     val isExpired: Boolean = false,
     @ColumnInfo(name = "group_name")
     val groupName: String = "Default"
-)  : Parcelable
+) : Parcelable
 

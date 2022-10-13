@@ -1,4 +1,7 @@
-package thuan.todolist.feature_todo.ui.add_edit_todo.constants
+package com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.constants
 
 const val ACTION_DELETE = "action_delete"
 const val ACTION_SET_TIME_AND_DATE = "action_set_time_and_date"
+const val BACK_TO_PREVIOUS_SCREEN = 0
+const val TIME_SET = 1
+const val TIME_NOT_SET = 2

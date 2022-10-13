@@ -22,6 +22,9 @@ import com.example.todoappcleanarchwithkoin.ui.todo.util.toFormattedString
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.constants.BACK_TO_PREVIOUS_SCREEN
+import com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.constants.TIME_NOT_SET
+import com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.constants.TIME_SET
 import java.util.*
 
 class AddEditFragment : Fragment(), ActionDeleteToDo, ActionSetTime {
@@ -56,43 +59,33 @@ class AddEditFragment : Fragment(), ActionDeleteToDo, ActionSetTime {
         lifecycleScope.launchWhenStarted {
             addEditViewModel.eventFlow.collectLatest { state ->
                 when (state) {
-                    AddEditViewModel.UiEvent.DeleteToDoSuccess -> {
-                        showSnackBar("Delete success")
-                        findNavController().popBackStack()
+                    is AddEditViewModel.UiEvent.Message -> {
+                        showSnackBar(resources.getString(state.idMessage))
                     }
-                    AddEditViewModel.UiEvent.SaveGroupFailed -> {
-                        showSnackBar("Save group failed")
-                    }
-                    AddEditViewModel.UiEvent.SaveGroupSuccess -> {
-                        showSnackBar("Save group success")
-                    }
-                    AddEditViewModel.UiEvent.SaveToDoFailed -> {
-                        showSnackBar("Save todo failed")
-                    }
-                    AddEditViewModel.UiEvent.SaveToDoSuccess -> {
-                        showSnackBar("Save todo success")
-                        findNavController().popBackStack()
-                    }
-                    AddEditViewModel.UiEvent.TimeIsSet -> {
-                        binding.deleteDateAndTime.visibility = View.VISIBLE
-                        val img = requireContext().getDrawable(R.drawable.ic_timer)
-                        binding.tvTimeAndDate.icon = img
-                    }
-                    AddEditViewModel.UiEvent.TimeNotSet -> {
-                        binding.deleteDateAndTime.visibility = View.GONE
-                        val img = requireContext().getDrawable(R.drawable.ic_timer)
-                        binding.tvTimeAndDate.icon = img
-                    }
-                    AddEditViewModel.UiEvent.UpdateToDoFailed -> {
-                        showSnackBar("Update todo failed")
-                    }
-                    AddEditViewModel.UiEvent.UpdateToDoSuccess -> {
-                        showSnackBar("Update todo success")
-                        findNavController().popBackStack()
+                    is AddEditViewModel.UiEvent.ChangeUi -> {
+                        when (state.id) {
+                            BACK_TO_PREVIOUS_SCREEN -> {
+                                showSnackBar(resources.getString(state.idMessage))
+                                findNavController().popBackStack()
+                            }
+                            TIME_SET -> {
+                                showSnackBar(resources.getString(state.idMessage))
+                                binding.deleteDateAndTime.visibility = View.GONE
+                                val img = requireContext().getDrawable(R.drawable.ic_timer)
+                                binding.tvTimeAndDate.icon = img
+                            }
+                            TIME_NOT_SET -> {
+                                showSnackBar(resources.getString(state.idMessage))
+                                binding.deleteDateAndTime.visibility = View.VISIBLE
+                                val img = requireContext().getDrawable(R.drawable.ic_timer_off)
+                                binding.tvTimeAndDate.icon = img
+                            }
+                        }
                     }
                 }
             }
         }
+
     }
 
     private fun onUIClick() {
@@ -165,6 +158,7 @@ class AddEditFragment : Fragment(), ActionDeleteToDo, ActionSetTime {
 
     private fun setData() {
         binding.apply {
+            deleteDateAndTime.visibility = if (addEditViewModel.todoDateAndTime == null) View.GONE else View.VISIBLE
             etTitle.setText(addEditViewModel.todoTitle)
             etDescription.setText(addEditViewModel.todoDescription)
             tvTimeAndDate.text =

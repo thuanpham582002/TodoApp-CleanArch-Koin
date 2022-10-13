@@ -62,4 +62,7 @@
     <string name="todo_updated">Việc cần làm đã được cập nhật</string>
     <string name="todo_not_saved">Lỗi! Việc cần làm chưa được lưu</string>
     <string name="my_to_do_list">Danh sách việc cần làm của tôi</string>
+    <string name="invalid_todo">Tiêu đề việc cần làm không được để trống</string>
+    <string name="invalid_group">Tên nhóm không được để trống</string>
+    <string name="time_set">Đã hẹn giờ!</string>
 </resources>

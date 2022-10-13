@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import com.example.todoappcleanarchwithkoin.databinding.BottomsheetDeleteAlertBinding
 import com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.utils.ActionDeleteToDo
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import thuan.todolist.feature_todo.ui.add_edit_todo.constants.ACTION_DELETE
+import com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.constants.ACTION_DELETE
 
 class AlertDeleteBottomSheet : BottomSheetDialogFragment() {
     private lateinit var binding: BottomsheetDeleteAlertBinding

@@ -11,14 +11,12 @@ import com.example.core.domain.model.todo.InvalidTodoException
 import com.example.core.domain.use_case.TodoUseCase
 import com.example.todoappcleanarchwithkoin.R
 import com.example.todoappcleanarchwithkoin.ui.notification.TodoScheduler
+import com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.constants.BACK_TO_PREVIOUS_SCREEN
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.get
-import com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.constants.BACK_TO_PREVIOUS_SCREEN
-import com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.constants.TIME_NOT_SET
-import com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.constants.TIME_SET
 import java.util.*
 
 class AddEditViewModel(
@@ -41,11 +39,11 @@ class AddEditViewModel(
     init {
         if (coreTodoEntity!!.title.isNotEmpty()) {
             todoId = coreTodoEntity.id
-            todoIsCompleted = coreTodoEntity.isCompleted
-            todoGroupName = coreTodoEntity.groupName
-            todoDescription = coreTodoEntity.description
-            todoDateAndTime = coreTodoEntity.dateAndTime
             todoTitle = coreTodoEntity.title
+            todoDescription = coreTodoEntity.description
+            todoIsCompleted = coreTodoEntity.isCompleted
+            todoDateAndTime = coreTodoEntity.dateAndTime
+            todoGroupName = coreTodoEntity.groupName
         }
     }
 
@@ -72,13 +70,6 @@ class AddEditViewModel(
             }
 
             is AddEditEvent.EnteredDateAndTime -> {
-                viewModelScope.launch(Dispatchers.IO) {
-                    if (event.dateAndTime != null) {
-                        _eventFlow.emit(UiEvent.ChangeUi(TIME_SET, R.string.time_set))
-                    } else {
-                        _eventFlow.emit(UiEvent.ChangeUi(TIME_NOT_SET, R.string.time_not_set))
-                    }
-                }
                 todoDateAndTime = event.dateAndTime
             }
 

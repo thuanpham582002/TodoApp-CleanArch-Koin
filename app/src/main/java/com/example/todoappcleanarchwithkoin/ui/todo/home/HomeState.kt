@@ -5,6 +5,7 @@ import com.example.core.domain.util.TodoOrder
 
 data class HomeState(
     val listTodo: List<TodoEntity> = emptyList(),
+    val currentGroupName: String? = null,
     val todoOrder: TodoOrder.Order = TodoOrder.Order(),
     val isOrderSectionVisible: Boolean = false,
 )

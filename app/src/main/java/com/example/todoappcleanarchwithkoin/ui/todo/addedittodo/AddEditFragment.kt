@@ -23,8 +23,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.constants.BACK_TO_PREVIOUS_SCREEN
-import com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.constants.TIME_NOT_SET
-import com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.constants.TIME_SET
 import java.util.*
 
 class AddEditFragment : Fragment(), ActionDeleteToDo, ActionSetTime {
@@ -35,9 +33,7 @@ class AddEditFragment : Fragment(), ActionDeleteToDo, ActionSetTime {
     private lateinit var dateAndTimePickerBottomSheet: DateAndTimePickerBottomSheet
     private val addEditViewModel: AddEditViewModel by viewModel()
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentAddEditBinding.inflate(inflater, container, false)
         alertDeleteBottomSheet = AlertDeleteBottomSheet.newInstance(this)
@@ -68,18 +64,6 @@ class AddEditFragment : Fragment(), ActionDeleteToDo, ActionSetTime {
                                 showSnackBar(resources.getString(state.idMessage))
                                 findNavController().popBackStack()
                             }
-                            TIME_SET -> {
-                                showSnackBar(resources.getString(state.idMessage))
-                                binding.deleteDateAndTime.visibility = View.GONE
-                                val img = requireContext().getDrawable(R.drawable.ic_timer)
-                                binding.tvTimeAndDate.icon = img
-                            }
-                            TIME_NOT_SET -> {
-                                showSnackBar(resources.getString(state.idMessage))
-                                binding.deleteDateAndTime.visibility = View.VISIBLE
-                                val img = requireContext().getDrawable(R.drawable.ic_timer_off)
-                                binding.tvTimeAndDate.icon = img
-                            }
                         }
                     }
                 }
@@ -88,6 +72,7 @@ class AddEditFragment : Fragment(), ActionDeleteToDo, ActionSetTime {
 
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private fun onUIClick() {
         binding.apply {
             etTitle.doAfterTextChanged { s ->
@@ -106,8 +91,7 @@ class AddEditFragment : Fragment(), ActionDeleteToDo, ActionSetTime {
                     dateAndTimePickerBottomSheet.dismiss()
                 } else {
                     dateAndTimePickerBottomSheet.show(
-                        childFragmentManager,
-                        "DateAndTimePickerBottomSheet"
+                        childFragmentManager, "DateAndTimePickerBottomSheet"
                     )
                 }
             }
@@ -116,6 +100,7 @@ class AddEditFragment : Fragment(), ActionDeleteToDo, ActionSetTime {
                 tvTimeAndDate.text = resources.getString(R.string.time_not_set)
                 addEditViewModel.onEvent(AddEditEvent.EnteredDateAndTime(null))
                 it.visibility = View.GONE
+                binding.tvTimeAndDate.icon = requireContext().getDrawable(R.drawable.ic_timer_off)
             }
 
             switchIsDone.setOnCheckedChangeListener { _, isChecked ->
@@ -156,13 +141,21 @@ class AddEditFragment : Fragment(), ActionDeleteToDo, ActionSetTime {
         }
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private fun setData() {
         binding.apply {
-            deleteDateAndTime.visibility = if (addEditViewModel.todoDateAndTime == null) View.GONE else View.VISIBLE
+            if (addEditViewModel.todoDateAndTime == null) {
+                tvTimeAndDate.text = resources.getString(R.string.time_not_set)
+                deleteDateAndTime.visibility = View.GONE
+                tvTimeAndDate.icon = requireContext().getDrawable(R.drawable.ic_timer_off)
+            } else {
+                tvTimeAndDate.text =
+                    addEditViewModel.todoDateAndTime?.toFormattedString(requireContext())
+                deleteDateAndTime.visibility = View.VISIBLE
+                tvTimeAndDate.icon = requireContext().getDrawable(R.drawable.ic_timer)
+            }
             etTitle.setText(addEditViewModel.todoTitle)
             etDescription.setText(addEditViewModel.todoDescription)
-            tvTimeAndDate.text =
-                addEditViewModel.todoDateAndTime.toFormattedString(requireContext())
             tvGroup.text = addEditViewModel.todoGroupName
             if (addEditViewModel.todoId == -1L) {
                 btnDelete.visibility = View.GONE
@@ -172,6 +165,13 @@ class AddEditFragment : Fragment(), ActionDeleteToDo, ActionSetTime {
     }
 
     private fun setupListPopUpGroup() {
+        listPopUpGroup = ListPopupWindow(requireContext())
+        listPopUpGroup.anchorView = binding.tvGroup
+        listPopUpGroup.setOnItemClickListener { _, _, position, _ ->
+            binding.tvGroup.text = listGroup[position]
+            addEditViewModel.onEvent(AddEditEvent.EnteredGroupName(listGroup[position]))
+            listPopUpGroup.dismiss()
+        }
         lifecycleScope.launchWhenStarted {
             addEditViewModel.listGroup.collect {
                 listGroup = it.map { groupToDo -> groupToDo.name }
@@ -180,20 +180,11 @@ class AddEditFragment : Fragment(), ActionDeleteToDo, ActionSetTime {
                     addEditViewModel.onEvent(AddEditEvent.SaveGroup("Default"))
                 }
 
-                listPopUpGroup = ListPopupWindow(requireContext())
                 listPopUpGroup.setAdapter(
                     ArrayAdapter(
-                        requireContext(),
-                        android.R.layout.simple_list_item_1,
-                        listGroup
+                        requireContext(), android.R.layout.simple_list_item_1, listGroup
                     )
                 )
-                listPopUpGroup.anchorView = binding.tvGroup
-                listPopUpGroup.setOnItemClickListener { _, _, position, _ ->
-                    binding.tvGroup.text = listGroup[position]
-                    addEditViewModel.onEvent(AddEditEvent.EnteredGroupName(listGroup[position]))
-                    listPopUpGroup.dismiss()
-                }
             }
         }
     }
@@ -211,8 +202,11 @@ class AddEditFragment : Fragment(), ActionDeleteToDo, ActionSetTime {
         addEditViewModel.onEvent(AddEditEvent.DeleteToDo)
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun setTime(dateAndTime: Date?) {
         binding.tvTimeAndDate.text = dateAndTime.toFormattedString(requireContext())
+        binding.deleteDateAndTime.visibility = View.VISIBLE
+        binding.tvTimeAndDate.icon = requireContext().getDrawable(R.drawable.ic_timer)
         addEditViewModel.onEvent(AddEditEvent.EnteredDateAndTime(dateAndTime))
     }
 

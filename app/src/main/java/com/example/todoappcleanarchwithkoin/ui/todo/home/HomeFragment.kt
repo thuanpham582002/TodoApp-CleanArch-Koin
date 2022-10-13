@@ -4,17 +4,14 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
-import android.widget.Spinner
+import android.widget.ListPopupWindow
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionPredicates
@@ -30,25 +27,20 @@ import com.example.todoappcleanarchwithkoin.ui.todo.home.components.adapter.Todo
 import com.example.todoappcleanarchwithkoin.ui.todo.home.components.adapter.selectiontracker.TodosDetailsLookup
 import com.example.todoappcleanarchwithkoin.ui.todo.home.components.adapter.selectiontracker.TodosKeyProvider
 import com.google.android.material.appbar.MaterialToolbar
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flatMapLatest
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class HomeFragment : Fragment(), ActionMode.Callback, SearchView.OnQueryTextListener,
-    AdapterView.OnItemSelectedListener {
-
+class HomeFragment : Fragment(), ActionMode.Callback, SearchView.OnQueryTextListener {
+    private var listGroup: List<String> = emptyList()
+    private lateinit var listPopUpGroup: ListPopupWindow
     private lateinit var binding: FragmentHomeBinding
     private val homeViewModel: HomeViewModel by viewModel()
     private lateinit var todoAdapter: TodoAdapter
     private var actionMode: ActionMode? = null
     lateinit var selectionTracker: SelectionTracker<Long>
-    private lateinit var spinner: Spinner
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
@@ -57,7 +49,7 @@ class HomeFragment : Fragment(), ActionMode.Callback, SearchView.OnQueryTextList
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupToolbar()
-        setupSpinnerGroup()
+        setupListPopUpGroup()
         setupRecyclerview()
         setupSelectionTrackerAdapter()
         onUIClick()
@@ -66,90 +58,83 @@ class HomeFragment : Fragment(), ActionMode.Callback, SearchView.OnQueryTextList
 
     private fun subscribeToObservers() {
         lifecycleScope.launchWhenStarted {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                homeViewModel.state.collect {
-                    todoAdapter.setData(it.listTodo)
-                    binding.rlOrder.visibility =
-                        if (!it.isOrderSectionVisible) View.GONE else View.VISIBLE
-                }
+            homeViewModel.state.collectLatest {
+                todoAdapter.setData(it.listTodo)
+                binding.rlOrder.visibility =
+                    if (!it.isOrderSectionVisible) View.GONE else View.VISIBLE
+                if (it.currentGroupName != null) binding.tvGroup.text = it.currentGroupName
             }
         }
     }
 
     private fun onUIClick() {
-        binding.fabAdd.setOnClickListener {
-            onDestroyActionMode(actionMode)
-            homeViewModel.saveStateTodo(TodoEntity())
-            it.findNavController().navigate(R.id.action_homeFragment_to_addEditFragment)
-        }
-
-        binding.btnOrder.setOnClickListener {
-            homeViewModel.onEvent(HomeEvent.ToggleOrderSection)
-        }
-
-        binding.rbDate.setOnClickListener {
-            homeViewModel.onEvent(HomeEvent.Order(TodoOrder.OrderBy.Date))
-        }
-
-        binding.rbTitle.setOnClickListener {
-            homeViewModel.onEvent(HomeEvent.Order(TodoOrder.OrderBy.Title))
-        }
-
-        binding.rbNone.setOnClickListener {
-            homeViewModel.onEvent(HomeEvent.Order(TodoOrder.OrderBy.None))
-        }
-
-        binding.rbAsc.setOnClickListener {
-            homeViewModel.onEvent(HomeEvent.Order(TodoOrder.OrderType.Ascending))
-        }
-
-        binding.rbDesc.setOnClickListener {
-            homeViewModel.onEvent(HomeEvent.Order(TodoOrder.OrderType.Descending))
-        }
-
-        binding.rbTodoAll.setOnClickListener {
-            homeViewModel.onEvent(HomeEvent.Order(TodoOrder.TodoType.All))
-        }
-
-        binding.rbTodoCompleted.setOnClickListener {
-            homeViewModel.onEvent(HomeEvent.Order(TodoOrder.TodoType.Completed))
-        }
-
-        binding.rbTodoUncompleted.setOnClickListener {
-            homeViewModel.onEvent(HomeEvent.Order(TodoOrder.TodoType.Uncompleted))
+        binding.apply {
+            fabAdd.setOnClickListener {
+                onDestroyActionMode(actionMode)
+                homeViewModel.saveStateTodo(TodoEntity())
+                it.findNavController().navigate(R.id.action_homeFragment_to_addEditFragment)
+            }
+            btnOrder.setOnClickListener {
+                homeViewModel.onEvent(HomeEvent.ToggleOrderSection)
+            }
+            rbDate.setOnClickListener {
+                homeViewModel.onEvent(HomeEvent.Order(TodoOrder.OrderBy.Date))
+            }
+            rbTitle.setOnClickListener {
+                homeViewModel.onEvent(HomeEvent.Order(TodoOrder.OrderBy.Title))
+            }
+            rbNone.setOnClickListener {
+                homeViewModel.onEvent(HomeEvent.Order(TodoOrder.OrderBy.None))
+            }
+            rbAsc.setOnClickListener {
+                homeViewModel.onEvent(HomeEvent.Order(TodoOrder.OrderType.Ascending))
+            }
+            rbDesc.setOnClickListener {
+                homeViewModel.onEvent(HomeEvent.Order(TodoOrder.OrderType.Descending))
+            }
+            rbTodoAll.setOnClickListener {
+                homeViewModel.onEvent(HomeEvent.Order(TodoOrder.TodoType.All))
+            }
+            rbTodoCompleted.setOnClickListener {
+                homeViewModel.onEvent(HomeEvent.Order(TodoOrder.TodoType.Completed))
+            }
+            rbTodoUncompleted.setOnClickListener {
+                homeViewModel.onEvent(HomeEvent.Order(TodoOrder.TodoType.Uncompleted))
+            }
+            tvGroup.setOnClickListener {
+                listPopUpGroup.show()
+            }
         }
     }
 
     private fun setupSelectionTrackerAdapter() {
-        selectionTracker =
-            SelectionTracker.Builder(
-                "selectionItem",
-                binding.recyclerView,
-                TodosKeyProvider(todoAdapter),
-                TodosDetailsLookup(binding.recyclerView),
-                StorageStrategy.createLongStorage()
-            ).withSelectionPredicate(
-                SelectionPredicates.createSelectAnything()
-            ).build()
+        selectionTracker = SelectionTracker.Builder(
+            "selectionItem",
+            binding.recyclerView,
+            TodosKeyProvider(todoAdapter),
+            TodosDetailsLookup(binding.recyclerView),
+            StorageStrategy.createLongStorage()
+        ).withSelectionPredicate(
+            SelectionPredicates.createSelectAnything()
+        ).build()
 
-        selectionTracker.addObserver(
-            object : SelectionTracker.SelectionObserver<Long>() {
-                override fun onSelectionChanged() {
-                    super.onSelectionChanged()
-                    if (actionMode == null) {
-                        actionMode =
-                            (requireActivity() as MainActivity).startSupportActionMode(this@HomeFragment)
-                        Log.i("HomeFragment", "onSelectionChanged: ")
-                    }
-
-                    val items = selectionTracker.selection.size()
-                    if (items > 0) {
-                        actionMode?.title = "$items ${resources.getString(R.string.selected)}"
-                    } else {
-                        actionMode?.finish()
-                    }
+        selectionTracker.addObserver(object : SelectionTracker.SelectionObserver<Long>() {
+            override fun onSelectionChanged() {
+                super.onSelectionChanged()
+                if (actionMode == null) {
+                    actionMode =
+                        (requireActivity() as MainActivity).startSupportActionMode(this@HomeFragment)
+                    Log.i("HomeFragment", "onSelectionChanged: ")
                 }
-            })
+
+                val items = selectionTracker.selection.size()
+                if (items > 0) {
+                    actionMode?.title = "$items ${resources.getString(R.string.selected)}"
+                } else {
+                    actionMode?.finish()
+                }
+            }
+        })
         todoAdapter.tracker = selectionTracker
     }
 
@@ -161,18 +146,26 @@ class HomeFragment : Fragment(), ActionMode.Callback, SearchView.OnQueryTextList
         }
     }
 
-    private fun setupSpinnerGroup() {
+    private fun setupListPopUpGroup() {
+        listPopUpGroup = ListPopupWindow(requireContext())
+        listPopUpGroup.anchorView = binding.tvGroup
+        listPopUpGroup.setOnItemClickListener { _, _, position, _ ->
+            binding.tvGroup.text = listGroup[position]
+            homeViewModel.onEvent(HomeEvent.CurrentGroupName(listGroup[position]))
+            if (position == 0) homeViewModel.onEvent(HomeEvent.Order(TodoOrder.GroupType.All))
+            else homeViewModel.onEvent(HomeEvent.Order(TodoOrder.GroupType.Custom(listGroup[position])))
+            listPopUpGroup.dismiss()
+        }
+
         lifecycleScope.launchWhenStarted {
             homeViewModel.listGroup.collect {
-                val group =
+                listGroup =
                     listOf(resources.getString(R.string.all)) + it.map { group -> group.name }
-                spinner = binding.spinnerGroup
-                val adapter =
-                    ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, group)
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spinner.adapter = adapter
-                spinner.onItemSelectedListener = this@HomeFragment
-                Log.i("HomeFragment", "setupSpinnerGroup: ")
+                listPopUpGroup.setAdapter(
+                    ArrayAdapter(
+                        requireContext(), android.R.layout.simple_list_item_1, listGroup
+                    )
+                )
             }
         }
     }
@@ -216,8 +209,7 @@ class HomeFragment : Fragment(), ActionMode.Callback, SearchView.OnQueryTextList
                 editText.setTextColor(Color.WHITE)
             }
         }
-        searchView.queryHint =
-            resources.getString(R.string.search_to_do)
+        searchView.queryHint = resources.getString(R.string.search_to_do)
         searchView.setOnQueryTextListener(this@HomeFragment)
 
     }
@@ -269,16 +261,5 @@ class HomeFragment : Fragment(), ActionMode.Callback, SearchView.OnQueryTextList
         binding.fabAdd.show()
         selectionTracker.clearSelection()
         actionMode = null
-    }
-
-    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-        if (p2 == 0)
-            homeViewModel.onEvent(HomeEvent.Order(TodoOrder.GroupType.All))
-        else
-            homeViewModel.onEvent(HomeEvent.Order(TodoOrder.GroupType.Custom(spinner.selectedItem.toString())))
-    }
-
-    override fun onNothingSelected(p0: AdapterView<*>?) {
-        TODO("Not yet implemented")
     }
 }

@@ -24,8 +24,8 @@
             app:layout_constraintTop_toBottomOf="@+id/toolbar"
             app:strokeWidth="1dp">
 
-            <Spinner
-                android:id="@+id/spinner_group"
+            <TextView
+                android:id="@+id/tv_group"
                 style="@style/Widget.AppCompat.Spinner.Underlined"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
                 android:contentDescription="@string/group"
                 android:minWidth="48dp"
                 android:minHeight="48dp"
-                android:spinnerMode="dropdown"
+                android:text="@string/all"
                 android:textSize="@dimen/title2_size"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -65,6 +65,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                app:checkedButton="@id/rb_none"
                 app:selectionRequired="true"
                 app:singleSelection="true">
 
@@ -108,6 +109,7 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/radioGroup_tag_order"
                 android:orientation="horizontal"
+                app:checkedButton="@id/rb_todo_all"
                 app:selectionRequired="true"
                 app:singleSelection="true">
 
@@ -146,13 +148,13 @@
                     android:textSize="@dimen/title3_size" />
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
-
             <com.google.android.material.button.MaterialButtonToggleGroup
                 android:id="@+id/radioGroup_order"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/radioGroup_todo_order"
                 android:orientation="horizontal"
+                app:checkedButton="@id/rb_asc"
                 app:selectionRequired="true"
                 app:singleSelection="true">
 

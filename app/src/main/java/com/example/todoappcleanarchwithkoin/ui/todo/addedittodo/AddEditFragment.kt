@@ -157,7 +157,7 @@ class AddEditFragment : Fragment(), ActionDeleteToDo, ActionSetTime {
             etTitle.setText(addEditViewModel.todoTitle)
             etDescription.setText(addEditViewModel.todoDescription)
             tvGroup.text = addEditViewModel.todoGroupName
-            if (addEditViewModel.todoId == -1L) {
+            if (addEditViewModel.coreTodoEntity!!.title.isEmpty()) {
                 btnDelete.visibility = View.GONE
             }
             switchIsDone.isChecked = addEditViewModel.todoIsCompleted

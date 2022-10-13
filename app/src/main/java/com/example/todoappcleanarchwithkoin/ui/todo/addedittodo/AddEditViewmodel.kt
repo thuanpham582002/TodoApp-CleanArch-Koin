@@ -23,7 +23,7 @@ class AddEditViewModel(
     private val todoUseCase: TodoUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val coreTodoEntity = savedStateHandle.get<TodoEntity>("todoEntity")
+    val coreTodoEntity = savedStateHandle.get<TodoEntity>("todoEntity")
     private val todoScheduler: TodoScheduler = get(TodoScheduler::class.java)
 
     var todoIsCompleted: Boolean = false

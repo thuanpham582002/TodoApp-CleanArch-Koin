@@ -1,6 +1,7 @@
 package com.example.todoappcleanarchwithkoin.ui.todo.addedittodo
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -87,13 +88,24 @@ class AddEditFragment : Fragment(), ActionDeleteToDo, ActionSetTime {
             }
 
             tvTimeAndDate.setOnClickListener {
-                if (dateAndTimePickerBottomSheet.isAdded) {
-                    dateAndTimePickerBottomSheet.dismiss()
-                } else {
-                    dateAndTimePickerBottomSheet.show(
-                        childFragmentManager, "DateAndTimePickerBottomSheet"
-                    )
-                }
+
+                DatePickerDialog(
+                    requireContext(),
+                    { _, year, month, dayOfMonth ->
+
+                    },
+                    Calendar.getInstance().get(Calendar.YEAR),
+                    Calendar.getInstance().get(Calendar.MONTH),
+                    Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+                ).show()
+
+//                if (dateAndTimePickerBottomSheet.isAdded) {
+//                    dateAndTimePickerBottomSheet.dismiss()
+//                } else {
+//                    dateAndTimePickerBottomSheet.show(
+//                        childFragmentManager, "DateAndTimePickerBottomSheet"
+//                    )
+//                }
             }
 
             deleteDateAndTime.setOnClickListener {

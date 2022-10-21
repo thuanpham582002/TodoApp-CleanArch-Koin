@@ -64,4 +64,15 @@
     <string name="invalid_todo">Title cannot be empty</string>
     <string name="invalid_group">Group Name can not be empty!</string>
     <string name="time_set">Time set</string>
+    <string name="black">black</string>
+    <string name="red">red</string>
+    <string name="green">green</string>
+    <string name="blue">blue</string>
+    <string name="yellow">yellow</string>
+    <string name="purple">purple</string>
+    <string name="orange">orange</string>
+    <string name="group_name">Group name</string>
+    <string name="color_tag">Color tag</string>
+    <string name="the_color_tag_is_used_to_identify_the_group_in_the_list_of_groups_you_can_change_the_color_tag_later">The color tag is used to identify the group in the list of groups. You can change the color tag later.</string>
+    <string name="add_a_new_todo">add a new todo</string>
 </resources>

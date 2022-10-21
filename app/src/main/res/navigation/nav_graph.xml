@@ -23,6 +23,9 @@
             app:exitAnim="@anim/anim_leave_from_top"
             app:popEnterAnim="@anim/anim_from_top"
             app:popExitAnim="@anim/anim_leave_from_bottom" />
+        <action
+            android:id="@+id/action_homeFragment_to_addGroupFragment"
+            app:destination="@id/addGroupFragment" />
     </fragment>
     <fragment
         android:id="@+id/addEditFragment"
@@ -46,4 +49,11 @@
         android:name="com.example.todoappcleanarchwithkoin.ui.setting.ui.AboutMeFragment"
         android:label="AboutMeFragment"
         tools:layout="@layout/fragment_about_me" />
+    <fragment
+        android:id="@+id/addGroupFragment"
+        android:name="com.example.todoappcleanarchwithkoin.ui.todo.addgroup.AddGroupFragment"
+        android:label="AddGroupFragment"
+        tools:layout="@layout/fragment_add_group">
+
+    </fragment>
 </navigation>

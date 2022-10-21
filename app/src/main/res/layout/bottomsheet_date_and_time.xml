@@ -24,31 +24,37 @@
         android:layout_below="@+id/tvDialogTitle"
         android:layout_centerHorizontal="true" />
 
-    <DatePicker
-        android:id="@+id/datePicker"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/llDate"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvDetailTime"
         android:layout_alignParentStart="true"
-        android:calendarViewShown="false"
-        android:datePickerMode="spinner"
-        android:scaleX="0.9"
-        android:scaleY="0.9" />
-
-    <TimePicker
-        android:id="@+id/timePicker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tvDetailTime"
         android:layout_alignParentEnd="true"
-        android:scaleX="0.9"
-        android:scaleY="0.9"
-        android:timePickerMode="spinner" />
+        >
+
+        <DatePicker
+            android:id="@+id/datePicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:calendarViewShown="false"
+            android:datePickerMode="spinner"
+            android:scaleX="0.9"
+            android:scaleY="0.9" />
+
+        <TimePicker
+            android:id="@+id/timePicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleX="0.9"
+            android:scaleY="0.9"
+            android:timePickerMode="spinner" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/datePicker"
+        android:layout_below="@+id/llDate"
         android:layout_centerHorizontal="true"
         android:orientation="horizontal">
 
@@ -57,20 +63,18 @@
             style="@style/ThemeOverlay.Material3.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/cancel"
-            android:textStyle="bold"
             android:layout_marginEnd="8sp"
-            />
+            android:text="@string/cancel"
+            android:textStyle="bold" />
         <!--        android:layout_marginEnd="@dimen/extreme_large_margin3"-->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnOK"
             style="@style/ThemeOverlay.Material3.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/OK"
-            android:textStyle="bold"
             android:layout_marginStart="8sp"
             />
         <!--        android:layout_marginStart="@dimen/extreme_large_margin3"-->
     </LinearLayout>
+
 </RelativeLayout>

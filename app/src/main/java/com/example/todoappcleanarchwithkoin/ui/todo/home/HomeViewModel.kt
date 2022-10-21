@@ -29,9 +29,10 @@ class HomeViewModel(private val todoUseCase: TodoUseCase) : ViewModel() {
     }
 
     private fun getTodos(order: TodoOrder.Order) {
+        Log.i("HomeViewModel", "getTodos: $order")
+
         getTodosJob?.cancel()
         getTodosJob = todoUseCase.getAllTodoEntity(order).onEach { todos ->
-            Log.i("HomeViewModel", "getTodos:")
             _state.value = _state.value.copy(
                 listTodo = todos,
                 todoOrder = order
@@ -76,8 +77,8 @@ class HomeViewModel(private val todoUseCase: TodoUseCase) : ViewModel() {
 
                 }
             }
-            is HomeEvent.CurrentGroupName -> {
-                _state.value = _state.value.copy(currentGroupName = event.groupName)
+            is HomeEvent.CurrentGroupIndex -> {
+                _state.value = _state.value.copy(currentGroupIndex = event.groupIndex)
             }
             is HomeEvent.SearchQueryChange -> {
                 _state.value = _state.value.copy(searchQuery = event.newText)

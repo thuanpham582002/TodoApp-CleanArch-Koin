@@ -4,9 +4,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.ArrayAdapter
 import android.widget.EditText
-import android.widget.ListPopupWindow
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.SearchView
@@ -17,22 +15,24 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StorageStrategy
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.core.data.source.local.model.todo.TodoEntity
 import com.example.core.domain.util.TodoOrder
 import com.example.todoappcleanarchwithkoin.MainActivity
 import com.example.todoappcleanarchwithkoin.R
 import com.example.todoappcleanarchwithkoin.databinding.FragmentHomeBinding
+import com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.AddEditBottomSheetFragment
 import com.example.todoappcleanarchwithkoin.ui.todo.home.components.adapter.TodoAdapter
 import com.example.todoappcleanarchwithkoin.ui.todo.home.components.adapter.selectiontracker.TodosDetailsLookup
 import com.example.todoappcleanarchwithkoin.ui.todo.home.components.adapter.selectiontracker.TodosKeyProvider
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.tabs.TabLayout
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeFragment : Fragment(), ActionMode.Callback, SearchView.OnQueryTextListener {
     private var listGroup: List<String> = emptyList()
-    private lateinit var listPopUpGroup: ListPopupWindow
     private lateinit var binding: FragmentHomeBinding
     private val homeViewModel: HomeViewModel by viewModel()
     private lateinit var todoAdapter: TodoAdapter
@@ -49,7 +49,7 @@ class HomeFragment : Fragment(), ActionMode.Callback, SearchView.OnQueryTextList
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupToolbar()
-        setupListPopUpGroup()
+        setupTabLayout()
         setupRecyclerview()
         setupSelectionTrackerAdapter()
         onUIClick()
@@ -62,7 +62,6 @@ class HomeFragment : Fragment(), ActionMode.Callback, SearchView.OnQueryTextList
                 todoAdapter.setData(it.listTodo.filter { todo -> todo.title.contains(it.searchQuery) })
                 binding.rlOrder.visibility =
                     if (!it.isOrderSectionVisible) View.GONE else View.VISIBLE
-                if (it.currentGroupName != null) binding.tvGroup.text = it.currentGroupName
             }
         }
     }
@@ -100,9 +99,6 @@ class HomeFragment : Fragment(), ActionMode.Callback, SearchView.OnQueryTextList
             }
             rbTodoUncompleted.setOnClickListener {
                 homeViewModel.onEvent(HomeEvent.Order(TodoOrder.TodoType.Uncompleted))
-            }
-            tvGroup.setOnClickListener {
-                listPopUpGroup.show()
             }
         }
     }
@@ -143,30 +139,59 @@ class HomeFragment : Fragment(), ActionMode.Callback, SearchView.OnQueryTextList
         with(binding.recyclerView) {
             adapter = todoAdapter
             layoutManager = LinearLayoutManager(requireContext())
+            addItemDecoration(
+                DividerItemDecoration(
+                    requireContext(), DividerItemDecoration.VERTICAL
+                )
+            )
         }
     }
 
-    private fun setupListPopUpGroup() {
-        listPopUpGroup = ListPopupWindow(requireContext())
-        listPopUpGroup.anchorView = binding.tvGroup
-        listPopUpGroup.setOnItemClickListener { _, _, position, _ ->
-            binding.tvGroup.text = listGroup[position]
-            homeViewModel.onEvent(HomeEvent.CurrentGroupName(listGroup[position]))
-            if (position == 0) homeViewModel.onEvent(HomeEvent.Order(TodoOrder.GroupType.All))
-            else homeViewModel.onEvent(HomeEvent.Order(TodoOrder.GroupType.Custom(listGroup[position])))
-            listPopUpGroup.dismiss()
-        }
+    private fun setupTabLayout() {
+        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                if (tab.text == "") {
+//                    findNavController().navigate(R.id.action_homeFragment_to_addGroupFragment)
+                    AddEditBottomSheetFragment().show(childFragmentManager, "addEdit")
+                    return
+                }
+
+                if (tab.position == 0) {
+                    homeViewModel.onEvent(HomeEvent.Order(TodoOrder.GroupType.All))
+                } else {
+                    homeViewModel.onEvent(HomeEvent.Order(TodoOrder.GroupType.Custom(tab.text.toString())))
+                }
+
+                if (homeViewModel.state.value.currentGroupIndex != tab.position) homeViewModel.onEvent(
+                    HomeEvent.CurrentGroupIndex(tab.position)
+                )
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab) {
+            }
+        })
 
         lifecycleScope.launchWhenStarted {
             homeViewModel.listGroup.collect {
                 listGroup =
-                    listOf(resources.getString(R.string.all)) + it.map { group -> group.name }
-                listPopUpGroup.setAdapter(
-                    ArrayAdapter(
-                        requireContext(), android.R.layout.simple_list_item_1, listGroup
+                    listOf(resources.getString(R.string.all)) + it.map { group -> group.name } + listOf(
+                        ""
                     )
-                )
+//                binding.tabLayout.setupWithViewPager(binding.viewPager)
+                binding.tabLayout.apply {
+                    removeAllTabs()
+                    val currentIndex = homeViewModel.state.value.currentGroupIndex
+                    for (element in listGroup) {
+                        addTab(binding.tabLayout.newTab().setText(element))
+                    }
+                    getTabAt(listGroup.size - 1)?.setIcon(R.drawable.ic_add)
+                    getTabAt(currentIndex)?.select()
+                }
             }
+
         }
     }
 

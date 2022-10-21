@@ -19,9 +19,7 @@ abstract class TodoDatabase : RoomDatabase() {
     abstract val todoDao: TodoDao
 
     companion object {
-        const val DATABASE_NAME = "todo_db"
-
-//        @Volatile // volatile is used to make sure that the value of INSTANCE is always up-to-date and the same to all execution threads
+        //        @Volatile // volatile is used to make sure that the value of INSTANCE is always up-to-date and the same to all execution threads
 //        private var instance: TodoDatabase? = null
 //        fun getInstance(context: Context): TodoDatabase {
 //            return instance ?: synchronized(this) {
@@ -34,5 +32,7 @@ abstract class TodoDatabase : RoomDatabase() {
 //                    .fallbackToDestructiveMigration().build()
 //            }
 //        }
+        const val DATABASE_NAME = "todo_db"
+
     }
 }

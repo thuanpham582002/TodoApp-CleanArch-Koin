@@ -46,17 +46,16 @@ class TodoNotificationReceiver : BroadcastReceiver() {
              */
             val savedStateHandle: SavedStateHandle = get(SavedStateHandle::class.java)
             savedStateHandle["todoEntity"] = todoEntity
-
-
+//
             val openEditIntent = NavDeepLinkBuilder(context).setGraph(R.navigation.nav_graph)
-                .setDestination(R.id.addEditFragment).createPendingIntent()
+                .setDestination(R.id.homeFragment).createPendingIntent()
 
             // Create the notification to be shown
             val mBuilder = NotificationCompat.Builder(context, TODO_CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setContentTitle(intent.getStringExtra(TODO_TITLE))
                 .setContentText(intent.getStringExtra(TODO_DESCRIPTION)).setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT).setContentIntent(openEditIntent)
+                .setContentIntent(openEditIntent)
 
             mBuilder.addAction(
                 android.R.drawable.ic_menu_delete,
@@ -76,7 +75,7 @@ class TodoNotificationReceiver : BroadcastReceiver() {
 
             // Get the Notification manager service
             val am = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            // update toDO
+            // update to DO
             // Show a notification
             am.notify(id.toInt(), mBuilder.build())
         }

@@ -2,10 +2,10 @@ package com.example.todoappcleanarchwithkoin.ui.todo.home.components.adapter
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import androidx.navigation.findNavController
 import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.DiffUtil
@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.core.data.source.local.model.todo.TodoEntity
 import com.example.todoappcleanarchwithkoin.R
 import com.example.todoappcleanarchwithkoin.databinding.ItemTodoBinding
-import com.example.todoappcleanarchwithkoin.ui.todo.home.HomeEvent
 import com.example.todoappcleanarchwithkoin.ui.todo.home.HomeViewModel
 import com.example.todoappcleanarchwithkoin.ui.todo.home.components.util.TodoRecycleDiffUtil
 import com.example.todoappcleanarchwithkoin.ui.todo.util.toFormattedString
@@ -27,17 +26,26 @@ class TodoAdapter(private val homeViewModel: HomeViewModel) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(todoEntity: TodoEntity) {
             bindData(todoEntity)
-            onClick(todoEntity)
             checkItemSelection(todoEntity)
             startAnimation()
         }
 
         private fun bindData(todoEntity: TodoEntity) {
-            binding.tvTodo.text = todoEntity.title
-            binding.tvGroupName.text = todoEntity.groupName
-            binding.tvDateAndTime.text =
-                todoEntity.dateAndTime.toFormattedString(context = binding.root.context)
-            binding.checkbox.isChecked = todoEntity.isCompleted
+            binding.apply {
+                tvTodo.text = todoEntity.title
+                tvDateAndTime.text =
+                    todoEntity.dateAndTime.toFormattedString(context = binding.root.context)
+                Log.i(
+                    "TodoAdapter",
+                    "bindData: ${todoEntity.dateAndTime.toFormattedString(context = binding.root.context)}"
+                )
+                if (todoEntity.color != null) viewColorTag.setBackgroundColor(
+                    binding.root.resources.getColor(
+                        todoEntity.color!!
+                    )
+                )
+                else viewColorTag.visibility = View.GONE
+            }
         }
 
         fun getToDoDetails(): ItemDetailsLookup.ItemDetails<Long> {
@@ -68,18 +76,6 @@ class TodoAdapter(private val homeViewModel: HomeViewModel) :
                 binding.root.alpha = 0.5f
             } else {
                 binding.root.alpha = 1f
-            }
-        }
-
-        private fun onClick(todoEntity: TodoEntity) {
-            binding.root.setOnClickListener {
-                homeViewModel.saveStateTodo(todoEntity)
-                it.findNavController()
-                    .navigate(R.id.action_homeFragment_to_addEditFragment)
-            }
-
-            binding.checkbox.setOnClickListener {
-                homeViewModel.onEvent(HomeEvent.UpdateToDo(todoEntity.copy(isCompleted = binding.checkbox.isChecked)))
             }
         }
     }

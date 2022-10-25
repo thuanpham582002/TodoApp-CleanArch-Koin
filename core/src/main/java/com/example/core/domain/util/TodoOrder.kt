@@ -45,12 +45,14 @@ sealed interface TodoOrder {
 
     sealed interface GroupType : TodoOrder {
         object All : GroupType
-        data class Custom(val groupName: String) : GroupType
+        object Default : GroupType
+        data class Custom(val groupId: Long) : GroupType
 
         suspend fun filter(list: List<TodoEntity>, groupType: GroupType): List<TodoEntity> {
             return when (groupType) {
                 is All -> list
-                is Custom -> list.filter { it.groupName == groupType.groupName }
+                is Default -> list.filter { it.groupId == null }
+                is Custom -> list.filter { it.groupId == groupType.groupId }
             }
         }
     }

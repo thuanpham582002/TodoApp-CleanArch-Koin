@@ -18,23 +18,34 @@
             android:id="@+id/cv_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             app:cardCornerRadius="8dp"
             app:cardUseCompatPadding="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar"
             app:strokeWidth="1dp">
 
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.9"
+                android:contentDescription="@string/group"
+                android:minHeight="48dp"
+                app:tabMode="scrollable" />
+
+
             <TextView
                 android:id="@+id/tv_group"
                 style="@style/Widget.AppCompat.Spinner.Underlined"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.9"
                 android:contentDescription="@string/group"
                 android:minWidth="48dp"
                 android:minHeight="48dp"
                 android:text="@string/all"
                 android:textSize="@dimen/title2_size"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -48,6 +59,7 @@
                 android:contentDescription="@string/filter"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_filter_list" />
+
         </LinearLayout>
 
         <RelativeLayout

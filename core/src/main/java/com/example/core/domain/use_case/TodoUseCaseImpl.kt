@@ -23,8 +23,12 @@ class TodoUseCaseImpl(private val todoRepository: TodoRepository) : TodoUseCase 
         return todoRepository.getAllGroup()
     }
 
-    override suspend fun getTodoById(id: Long): TodoEntity {
+    override suspend fun getTodoById(id: Long): TodoEntity? {
         return todoRepository.getTodoById(id)
+    }
+
+    override suspend fun getGroupById(id: Long): GroupTodoEntity? {
+        return todoRepository.getGroupById(id)
     }
 
     override suspend fun insertTodoEntity(todoEntity: TodoEntity): Long {

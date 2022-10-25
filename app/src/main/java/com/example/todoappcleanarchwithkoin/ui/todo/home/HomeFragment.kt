@@ -10,7 +10,6 @@ import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
@@ -32,7 +31,6 @@ import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeFragment : Fragment(), ActionMode.Callback, SearchView.OnQueryTextListener {
-    private var listGroup: List<String> = emptyList()
     private lateinit var binding: FragmentHomeBinding
     private val homeViewModel: HomeViewModel by viewModel()
     private lateinit var todoAdapter: TodoAdapter
@@ -59,9 +57,30 @@ class HomeFragment : Fragment(), ActionMode.Callback, SearchView.OnQueryTextList
     private fun subscribeToObservers() {
         lifecycleScope.launchWhenStarted {
             homeViewModel.state.collectLatest {
+                Log.i("HomeFragment", "HomeState: $it")
+
                 todoAdapter.setData(it.listTodo.filter { todo -> todo.title.contains(it.searchQuery) })
                 binding.rlOrder.visibility =
                     if (!it.isOrderSectionVisible) View.GONE else View.VISIBLE
+            }
+        }
+        lifecycleScope.launchWhenStarted {
+            homeViewModel.stateListGroupTodoEntity.collect {
+                Log.i("HomeFragment", "stateListGroupTodoEntity: $it")
+                val listGroupName =
+                    listOf(resources.getString(R.string.all)) + listOf(resources.getString(R.string.default_group)) + it.map { group -> group.name } + listOf(
+                        ""
+                    )
+
+                binding.tabLayout.apply {
+                    removeAllTabs()
+                    val currentIndex = homeViewModel.currentGroupIndex
+                    for (element in listGroupName) {
+                        addTab(binding.tabLayout.newTab().setText(element))
+                    }
+                    getTabAt(listGroupName.size - 1)?.setIcon(R.drawable.ic_add)
+                    getTabAt(currentIndex)?.select()
+                }
             }
         }
     }
@@ -71,7 +90,7 @@ class HomeFragment : Fragment(), ActionMode.Callback, SearchView.OnQueryTextList
             fabAdd.setOnClickListener {
                 onDestroyActionMode(actionMode)
                 homeViewModel.saveStateTodo(TodoEntity())
-                it.findNavController().navigate(R.id.action_homeFragment_to_addEditFragment)
+                AddEditBottomSheetFragment().show(childFragmentManager, "addEdit")
             }
             btnOrder.setOnClickListener {
                 homeViewModel.onEvent(HomeEvent.ToggleOrderSection)
@@ -151,18 +170,29 @@ class HomeFragment : Fragment(), ActionMode.Callback, SearchView.OnQueryTextList
         binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 if (tab.text == "") {
-//                    findNavController().navigate(R.id.action_homeFragment_to_addGroupFragment)
-                    AddEditBottomSheetFragment().show(childFragmentManager, "addEdit")
+                    findNavController().navigate(R.id.action_homeFragment_to_addGroupFragment)
                     return
                 }
-
-                if (tab.position == 0) {
-                    homeViewModel.onEvent(HomeEvent.Order(TodoOrder.GroupType.All))
-                } else {
-                    homeViewModel.onEvent(HomeEvent.Order(TodoOrder.GroupType.Custom(tab.text.toString())))
+                Log.i("HomeFragment", "onTabSelected: ${tab.position}")
+                when (tab.position) {
+                    0 -> {
+                        homeViewModel.onEvent(HomeEvent.Order(TodoOrder.GroupType.All))
+                    }
+                    1 -> {
+                        homeViewModel.onEvent(HomeEvent.Order(TodoOrder.GroupType.Default))
+                    }
+                    else -> {
+                        homeViewModel.onEvent(
+                            HomeEvent.Order(
+                                TodoOrder.GroupType.Custom(
+                                    homeViewModel.stateListGroupTodoEntity.value[tab.position - 2].id
+                                )
+                            )
+                        )
+                    }
                 }
 
-                if (homeViewModel.state.value.currentGroupIndex != tab.position) homeViewModel.onEvent(
+                if (homeViewModel.currentGroupIndex != tab.position) homeViewModel.onEvent(
                     HomeEvent.CurrentGroupIndex(tab.position)
                 )
             }
@@ -173,26 +203,6 @@ class HomeFragment : Fragment(), ActionMode.Callback, SearchView.OnQueryTextList
             override fun onTabReselected(tab: TabLayout.Tab) {
             }
         })
-
-        lifecycleScope.launchWhenStarted {
-            homeViewModel.listGroup.collect {
-                listGroup =
-                    listOf(resources.getString(R.string.all)) + it.map { group -> group.name } + listOf(
-                        ""
-                    )
-//                binding.tabLayout.setupWithViewPager(binding.viewPager)
-                binding.tabLayout.apply {
-                    removeAllTabs()
-                    val currentIndex = homeViewModel.state.value.currentGroupIndex
-                    for (element in listGroup) {
-                        addTab(binding.tabLayout.newTab().setText(element))
-                    }
-                    getTabAt(listGroup.size - 1)?.setIcon(R.drawable.ic_add)
-                    getTabAt(currentIndex)?.select()
-                }
-            }
-
-        }
     }
 
     private fun setupToolbar() {

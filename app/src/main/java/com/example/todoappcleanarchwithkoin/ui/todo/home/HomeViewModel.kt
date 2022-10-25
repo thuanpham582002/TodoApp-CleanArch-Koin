@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.core.data.source.local.model.group.GroupTodoEntity
 import com.example.core.data.source.local.model.todo.TodoEntity
 import com.example.core.domain.use_case.TodoUseCase
 import com.example.core.domain.util.TodoOrder
@@ -17,20 +18,31 @@ import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.get
 
 class HomeViewModel(private val todoUseCase: TodoUseCase) : ViewModel() {
-    val listGroup = todoUseCase.getAllGroupTodoEntity()
     private val _state = MutableStateFlow(HomeState())
     val state: StateFlow<HomeState> = _state
-    private val todoScheduler: TodoScheduler = get(TodoScheduler::class.java)
+    private val _sateListGroupTodoEntity: MutableStateFlow<List<GroupTodoEntity>> =
+        MutableStateFlow(emptyList())
+    val stateListGroupTodoEntity: StateFlow<List<GroupTodoEntity>> = _sateListGroupTodoEntity
 
+    private val todoScheduler: TodoScheduler = get(TodoScheduler::class.java)
     private var getTodosJob: Job? = null
+    var currentGroupIndex: Int = 0
+
 
     init {
+        viewModelScope.launch {
+            todoUseCase.getAllGroupTodoEntity().collect {
+                _sateListGroupTodoEntity.value = it
+            }
+        }
         getTodos(TodoOrder.Order())
     }
 
     private fun getTodos(order: TodoOrder.Order) {
         Log.i("HomeViewModel", "getTodos: $order")
-
+        // flow onEach is like a observer
+        // flow launchIn is like a lifecycleScope
+        // difference between flow onEach and flow collect is that flow onEach is not a suspend function
         getTodosJob?.cancel()
         getTodosJob = todoUseCase.getAllTodoEntity(order).onEach { todos ->
             _state.value = _state.value.copy(
@@ -78,10 +90,15 @@ class HomeViewModel(private val todoUseCase: TodoUseCase) : ViewModel() {
                 }
             }
             is HomeEvent.CurrentGroupIndex -> {
-                _state.value = _state.value.copy(currentGroupIndex = event.groupIndex)
+                currentGroupIndex = event.groupIndex
             }
             is HomeEvent.SearchQueryChange -> {
                 _state.value = _state.value.copy(searchQuery = event.newText)
+            }
+            is HomeEvent.SaveGroup -> {
+                viewModelScope.launch {
+                    todoUseCase.insertGroupTodoEntity(event.group)
+                }
             }
         }
 

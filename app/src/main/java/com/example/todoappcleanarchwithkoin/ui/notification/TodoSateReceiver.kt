@@ -24,13 +24,17 @@ class TodoSateReceiver : BroadcastReceiver() {
             Log.i("ToDoChangeDoneReceiver", "onReceive: $action")
             CoroutineScope(Dispatchers.IO).launch {
                 val toDo = todoRepository.getTodoById(id)
-                todoRepository.updateTodo(toDo.copy(isCompleted = true))
+                if (toDo != null) {
+                    todoRepository.updateTodo(toDo.copy(isCompleted = true))
+                }
             }
         } else if (ACTION_DELETE == action) {
             Log.i("ToDoChangeDoneReceiver", "onReceive: $action $id")
             CoroutineScope(Dispatchers.IO).launch {
                 val toDo = todoRepository.getTodoById(id)
-                todoRepository.deleteTodo(toDo)
+                if (toDo != null) {
+                    todoRepository.deleteTodo(toDo)
+                }
             }
         }
         todoScheduler.todoDeleteNotification(id)

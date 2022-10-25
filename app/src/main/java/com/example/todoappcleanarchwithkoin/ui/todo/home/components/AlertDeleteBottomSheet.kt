@@ -1,4 +1,4 @@
-package com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.components
+package com.example.todoappcleanarchwithkoin.ui.todo.home.components
 
 import android.os.Bundle
 import android.view.LayoutInflater

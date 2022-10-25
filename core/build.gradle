@@ -3,7 +3,6 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
-
 }
 
 apply from: '../shared_dependencies.gradle'
@@ -36,7 +35,6 @@ android {
 }
 
 dependencies {
-
     implementation 'androidx.room:room-common:2.4.3'
     implementation 'androidx.test:runner:1.4.0'
 

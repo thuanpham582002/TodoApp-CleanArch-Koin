@@ -4,9 +4,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.core.data.source.local.model.group.GroupTodoEntity
 import com.example.core.data.source.local.model.todo.TodoEntity
-import com.example.core.domain.model.group.InvalidGroupException
 import com.example.core.domain.model.todo.InvalidTodoException
 import com.example.core.domain.use_case.TodoUseCase
 import com.example.todoappcleanarchwithkoin.R
@@ -14,118 +12,75 @@ import com.example.todoappcleanarchwithkoin.ui.notification.TodoScheduler
 import com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.constants.BACK_TO_PREVIOUS_SCREEN
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.koin.java.KoinJavaComponent.get
-import java.util.*
 
 class AddEditViewModel(
     private val todoUseCase: TodoUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    val coreTodoEntity = savedStateHandle.get<TodoEntity>("todoEntity")
+    private val coreTodoEntity = savedStateHandle.get<TodoEntity>("todoEntity")
     private val todoScheduler: TodoScheduler = get(TodoScheduler::class.java)
-
-    var todoIsCompleted: Boolean = false
-    var todoId: Long = 0
-    var todoGroupName: String = "Default"
-    var todoDescription: String = ""
-    var todoDateAndTime: Date? = null
-    var todoTitle: String = ""
-    val listGroup = todoUseCase.getAllGroupTodoEntity()
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    init {
-        if (coreTodoEntity!!.title.isNotEmpty()) {
-            todoId = coreTodoEntity.id
-            todoTitle = coreTodoEntity.title
-            todoDescription = coreTodoEntity.description
-            todoIsCompleted = coreTodoEntity.isCompleted
-            todoDateAndTime = coreTodoEntity.dateAndTime
-            todoGroupName = coreTodoEntity.groupName
-        }
-    }
+    private val _stateFlow = MutableStateFlow(AddEditState())
+    val stateFlow = _stateFlow.asStateFlow()
 
-    private fun getCurrentTodo(): TodoEntity {
-        return TodoEntity(
-            id = todoId,
-            title = todoTitle,
-            description = todoDescription,
-            dateAndTime = todoDateAndTime,
-            isCompleted = todoIsCompleted,
-            isExpired = coreTodoEntity?.isExpired ?: false,
-            groupName = todoGroupName
+    init {
+        if (coreTodoEntity != null) _stateFlow.value = _stateFlow.value.copy(
+            toDo = coreTodoEntity
         )
     }
 
     fun onEvent(event: AddEditEvent) {
         when (event) {
             is AddEditEvent.EnteredTitle -> {
-                todoTitle = event.title
+                _stateFlow.value = _stateFlow.value.copy(
+                    toDo = _stateFlow.value.toDo.copy(
+                        title = event.title
+                    )
+                )
             }
-
-            is AddEditEvent.EnteredDescription -> {
-                todoDescription = event.description
+            is AddEditEvent.EnteredDate -> {
+                _stateFlow.value = _stateFlow.value.copy(
+                    toDo = _stateFlow.value.toDo.copy(
+                        dateAndTime = event.date
+                    )
+                )
             }
+            is AddEditEvent.EnteredColor -> {
+                Log.i("AddEdit", "onEvent: ${event.color}")
+                _stateFlow.value = _stateFlow.value.copy(
+                    toDo = _stateFlow.value.toDo.copy(
+                        color = event.color
+                    )
+                )
+                Log.i("AddEdit", "onEvent: ${event.color}")
 
-            is AddEditEvent.EnteredDateAndTime -> {
-                todoDateAndTime = event.dateAndTime
             }
-
-            is AddEditEvent.EnteredIsDone -> {
-                todoIsCompleted = event.isCompleted
-            }
-
-            is AddEditEvent.EnteredGroupName -> {
-                todoGroupName = event.groupName
-            }
-
-            is AddEditEvent.SaveGroup -> {
-                viewModelScope.launch(Dispatchers.IO) {
-                    try {
-                        todoUseCase.insertGroupTodoEntity(GroupTodoEntity(name = event.groupName))
-                        _eventFlow.emit(UiEvent.Message(R.string.group_saved))
-                    } catch (e: InvalidGroupException) {
-                        _eventFlow.emit(UiEvent.Message(R.string.invalid_group))
-                    } catch (e: Exception) {
-                        _eventFlow.emit(UiEvent.Message(R.string.group_not_saved))
-                    }
-                }
-            }
-
             is AddEditEvent.SaveToDo -> {
                 saveToDo()
-            }
-
-            AddEditEvent.DeleteToDo -> {
-                viewModelScope.launch(Dispatchers.IO) {
-                    todoUseCase.deleteTodoEntity(todoUseCase.getTodoById(todoId))
-                    _eventFlow.emit(
-                        UiEvent.ChangeUi(
-                            BACK_TO_PREVIOUS_SCREEN, R.string.todo_deleted
-                        )
-                    )
-                    todoScheduler.todoCancelAlarmManager(todoId)
-                }
             }
         }
     }
 
     private fun saveToDo() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
-                if (coreTodoEntity!!.title.isEmpty()) {
-                    todoId = todoUseCase.insertTodoEntity(getCurrentTodo())
-                    _eventFlow.emit(UiEvent.ChangeUi(BACK_TO_PREVIOUS_SCREEN, R.string.todo_saved))
+                if (todoUseCase.getTodoById(stateFlow.value.toDo.id) == null) {
+                    Log.i("AddEditViewmodel", "insert: ${stateFlow.value.toDo}")
+                    todoUseCase.insertTodoEntity(stateFlow.value.toDo)
                 } else {
-                    todoUseCase.updateTodoEntity(getCurrentTodo())
-                    _eventFlow.emit(
-                        UiEvent.ChangeUi(BACK_TO_PREVIOUS_SCREEN, R.string.todo_updated)
-                    )
+                    Log.i("AddEditViewmodel", "update: ${stateFlow.value.toDo}")
+                    todoUseCase.updateTodoEntity(stateFlow.value.toDo)
                 }
-                Log.i("AddEditViewmodel", "saveToDo: ${getCurrentTodo()}")
-                todoScheduler.todoScheduleNotification(getCurrentTodo())
+                _eventFlow.emit(UiEvent.ChangeUi(BACK_TO_PREVIOUS_SCREEN, R.string.todo_saved))
+                Log.i("AddEditViewmodel", "saveToDo: ${stateFlow.value.toDo}")
+                todoScheduler.todoScheduleNotification(stateFlow.value.toDo)
             } catch (e: InvalidTodoException) {
                 _eventFlow.emit(UiEvent.Message(R.string.invalid_todo))
             } catch (e: Exception) {

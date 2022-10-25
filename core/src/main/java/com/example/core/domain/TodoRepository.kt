@@ -7,9 +7,10 @@ import kotlinx.coroutines.flow.Flow
 
 interface TodoRepository {
     fun getAllTodo(): Flow<List<TodoEntity>>
-    fun getTodoById(id: Long): TodoEntity
+    fun getTodoById(id: Long): TodoEntity?
     fun getAllTodoWithGroup(groupName: String): Flow<GroupWithTodos>
     fun getAllGroup(): Flow<List<GroupTodoEntity>>
+    fun getGroupById(id: Long): GroupTodoEntity?
     suspend fun deleteTodo(todoEntity: TodoEntity)
     suspend fun insertTodo(todoEntity: TodoEntity): Long
     suspend fun insertGroup(groupTodoEntity: GroupTodoEntity)

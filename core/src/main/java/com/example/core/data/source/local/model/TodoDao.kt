@@ -23,7 +23,10 @@ interface TodoDao {
     fun getTodoNotDone(): Flow<List<TodoEntity>>
 
     @Query("SELECT * FROM todo_table WHERE id = :id")
-    fun getTodoById(id: Long): TodoEntity
+    fun getTodoById(id: Long): TodoEntity?
+
+    @Query("SELECT * FROM group_todo_table WHERE group_id = :id")
+    fun getGroupById(id: Long): GroupTodoEntity?
 
     @Insert
     suspend fun insertTodo(toDo: TodoEntity): Long

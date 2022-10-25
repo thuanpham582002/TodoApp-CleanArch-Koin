@@ -14,7 +14,7 @@ class TodoRepositoryImpl(private val todoDao: TodoDao) : TodoRepository {
         return todoDao.getAllTodo()
     }
 
-    override fun getTodoById(id: Long): TodoEntity {
+    override fun getTodoById(id: Long): TodoEntity? {
         return todoDao.getTodoById(id)
     }
 
@@ -24,6 +24,10 @@ class TodoRepositoryImpl(private val todoDao: TodoDao) : TodoRepository {
 
     override fun getAllGroup(): Flow<List<GroupTodoEntity>> {
         return todoDao.getAllGroup()
+    }
+
+    override fun getGroupById(id: Long): GroupTodoEntity? {
+        return todoDao.getGroupById(id)
     }
 
     override suspend fun deleteTodo(todoEntity: TodoEntity) {

@@ -26,6 +26,7 @@ class TodoRecycleDiffUtil(
                 && oldList[oldItemPosition].description == newList[newItemPosition].description
                 && oldList[oldItemPosition].isCompleted == newList[newItemPosition].isCompleted
                 && oldList[oldItemPosition].dateAndTime == newList[newItemPosition].dateAndTime
-                && oldList[oldItemPosition].groupName == newList[newItemPosition].groupName
+                && oldList[oldItemPosition].groupId == newList[newItemPosition].groupId
+                && oldList[oldItemPosition].color == newList[newItemPosition].color
     }
 }

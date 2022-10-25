@@ -21,7 +21,9 @@ data class TodoEntity(
     @ColumnInfo(name = "todo_is_completed")
     val isCompleted: Boolean = false,
     val isExpired: Boolean = false,
-    @ColumnInfo(name = "group_name")
-    val groupName: String = "Default"
+    @ColumnInfo(name = "group_id")
+    val groupId: Long? = null,
+    @ColumnInfo(name = "todo_color")
+    val color: Int? = null,
 ) : Parcelable
 

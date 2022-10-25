@@ -5,4 +5,6 @@
     <dimen name="title3_size">16sp</dimen>
     <dimen name="title4_size">12sp</dimen>
     <dimen name="medium_margin" tools:ignore="UnusedResources">16dp</dimen>
+    <dimen name="radio_btn_color_size">25dp</dimen>
+    <dimen name="radio_btn_color_margin">5dp</dimen>
 </resources>

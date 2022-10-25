@@ -10,13 +10,6 @@
         android:label="HomeFragment"
         tools:layout="@layout/fragment_home">
         <action
-            android:id="@+id/action_homeFragment_to_addEditFragment"
-            app:destination="@id/addEditFragment"
-            app:enterAnim="@anim/anim_from_bottom"
-            app:exitAnim="@anim/anim_leave_from_top"
-            app:popEnterAnim="@anim/anim_from_top"
-            app:popExitAnim="@anim/anim_leave_from_bottom" />
-        <action
             android:id="@+id/action_homeFragment_to_settingsFragment"
             app:destination="@id/settingsFragment"
             app:enterAnim="@anim/anim_from_bottom"
@@ -27,11 +20,6 @@
             android:id="@+id/action_homeFragment_to_addGroupFragment"
             app:destination="@id/addGroupFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/addEditFragment"
-        android:name="com.example.todoappcleanarchwithkoin.ui.todo.addedittodo.AddEditFragment"
-        android:label="AddEditFragment"
-        tools:layout="@layout/fragment_add_edit" />
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.todoappcleanarchwithkoin.ui.setting.ui.SettingsFragment"
